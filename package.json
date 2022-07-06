@@ -10,6 +10,7 @@
     "lint:fix": "yarn lint  --fix",
     "test": "jest --passWithNoTests --no-cache --runInBand",
     "test:watch": "yarn test --watch",
+    "test:staged": "yarn test --findRelatedTests",
     "test:coverage": "yarn test --coverage"
   },
   "keywords": [],
@@ -26,6 +27,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.0.0",
     "jest": "^28.1.2",
+    "lint-staged": "^13.0.3",
     "ts-jest": "^28.0.5",
     "typescript": "^4"
   },
