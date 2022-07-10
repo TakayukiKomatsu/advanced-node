@@ -21,6 +21,7 @@ describe('FacebookAuthenticationService', () => {
     sut = new FacebookAuthenticationService(
       facebookApi,
       userAccountRepo)
+    userAccountRepo.load.mockResolvedValue(undefined)
   })
 
   it('Should call LoadFacebookUserApi with correct params', async () => {
@@ -45,7 +46,6 @@ describe('FacebookAuthenticationService', () => {
   })
 
   it('should call userAccountRepo when LoadFacebookUserApi returns undefined', async () => {
-    userAccountRepo.load.mockResolvedValueOnce(undefined)
     await sut.perform({ token })
 
     expect(userAccountRepo.createFromFacebook).toHaveBeenCalledWith({
@@ -67,6 +67,20 @@ describe('FacebookAuthenticationService', () => {
       id: 'any_id',
       facebookId: 'any_fb_id',
       name: 'any_name'
+    })
+    expect(userAccountRepo.updateWithFacebook).toBeCalledTimes(1)
+  })
+
+  it('should update account name', async () => {
+    userAccountRepo.load.mockResolvedValueOnce({
+      id: 'any_id'
+    })
+    await sut.perform({ token })
+
+    expect(userAccountRepo.updateWithFacebook).toHaveBeenCalledWith({
+      id: 'any_id',
+      facebookId: 'any_fb_id',
+      name: 'any_fb_name'
     })
     expect(userAccountRepo.updateWithFacebook).toBeCalledTimes(1)
   })
