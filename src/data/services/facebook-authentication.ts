@@ -10,7 +10,7 @@ import {
 import { FacebookAccount } from '@/domain/models/facebook-accounts'
 import { AccessToken } from '@/domain/models'
 
-export class FacebookAuthenticationService {
+export class FacebookAuthenticationService implements FacebookAuthentication {
   constructor (
     private readonly facebookApi: LoadFacebookUserApi,
     private readonly userAccountRepo: LoadUserAccountRepository &
@@ -20,7 +20,7 @@ export class FacebookAuthenticationService {
 
   async perform (
     params: FacebookAuthentication.Params
-  ): Promise<AuthenticationError> {
+  ): Promise<FacebookAuthentication.Result> {
     const fbData = await this.facebookApi.loadUser(params)
 
     if (fbData !== undefined) {
@@ -28,7 +28,9 @@ export class FacebookAuthenticationService {
       const fbAccount = new FacebookAccount(fbData, accountData)
       const { id } = await this.userAccountRepo.saveWithFacebook(fbAccount)
 
-      await this.crypto.generateToken({ key: id, expirationInMs: AccessToken.expirationInMs })
+      const token = await this.crypto.generateToken({ key: id, expirationInMs: AccessToken.expirationInMs })
+
+      return new AccessToken(token)
     }
     return new AuthenticationError()
   }
